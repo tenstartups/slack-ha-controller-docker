@@ -1,9 +1,8 @@
 [
   {
     "id": "ha",
-    "execute-command": "/var/scripts/ha",
+    "execute-command": "/var/scripts/ha-command",
     "command-working-directory": "/var/scripts",
-    "response-message": "Running home automation command",
     "include-command-output-in-response": true,
     "pass-arguments-to-command": [
       {

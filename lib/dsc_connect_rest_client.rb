@@ -6,19 +6,19 @@ class DSCConnectRestClient
   include Singleton
 
   def disarm
-    puts RestClient.post("#{dsc_connect_uri}/disarm?code=1234")
+    RestClient.post("#{dsc_connect_uri}/disarm?code=1234")
   rescue StandardError => e
     STDERR.puts e.message
   end
 
   def arm_stay
-    puts RestClient.post("#{dsc_connect_uri}/arm_stay")
+    RestClient.post("#{dsc_connect_uri}/arm_stay")
   rescue StandardError => e
     STDERR.puts e.message
   end
 
   def arm_away
-    puts RestClient.post("#{dsc_connect_uri}/arm_away")
+    RestClient.post("#{dsc_connect_uri}/arm_away")
   rescue StandardError => e
     STDERR.puts e.message
   end
