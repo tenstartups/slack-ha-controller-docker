@@ -1,0 +1,48 @@
+#
+# Slackbot webhook command runner for home automation scripts
+#
+# http://github.com/tenstartups/slackbot-ha-commander-docker
+#
+FROM tenstartups/rpi-alpine-ruby:latest
+
+MAINTAINER Marc Lennox <marc.lennox@gmail.com>
+
+# Set environment variables.
+ENV \
+  GOPATH=/gosource \
+  TERM=xterm-color \
+  RUBYLIB=/usr/local/lib/ruby
+
+# Install packages.
+RUN \
+  apk --update add git go libffi-dev && \
+  rm -rf /var/cache/apk/*
+
+# Install webhook go service
+RUN \
+  go get github.com/adnanh/webhook && \
+  cp /gosource/bin/webhook /usr/local/bin/
+
+# Install ruby gems.
+RUN gem install activesupport json colorize listen rest-client slack-notifier
+
+# Add files to the container.
+COPY entrypoint.sh /docker-entrypoint
+ADD script /tmp/script
+ADD lib /usr/local/lib/ruby
+
+# Copy scripts into place.
+RUN \
+  mkdir -p /var/scripts && \
+  find /tmp/script -type f -name '*.sh' | while read f; do cp -v "$f" "/var/scripts/`basename ${f%.sh}`"; done && \
+  find /tmp/script -type f -name '*.rb' | while read f; do cp -v "$f" "/var/scripts/`basename ${f%.rb}`"; done && \
+  rm -rf /tmp/script
+
+# Define entrypoint script.
+ENTRYPOINT ["/docker-entrypoint"]
+
+# Expose default ports
+EXPOSE 9000
+
+# Default command
+CMD ["webhook"]

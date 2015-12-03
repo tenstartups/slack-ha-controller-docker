@@ -1,0 +1,36 @@
+---
+action_handlers:
+  isy994:
+    class_name: ISY994RestClient
+    uri: http://admin:admin@isy994-ems
+    actions:
+      run_isy_program: run_program
+      set_isy_integer_variable: set_integer
+      set_isy_state_variable: set_state
+  dsc-connect:
+    class_name: DSCConnectRestClient
+    uri: http://dsc-connect.docker
+    actions:
+      dsc_alarm_disarm: disarm
+      arm_alarm_stay: arm_stay
+      arm_alarm_away: arm_away
+
+command_actions:
+  - if:
+      - 0: disarm
+    then:
+      - run_isy_program:
+          name: f_alarm_disarm
+          command: :then
+  - if:
+      - 0: arm_stay
+    then:
+      - run_isy_program:
+          name: f_alarm_arm_stay
+          command: :then
+  - if:
+      - 0: arm_away
+    then:
+      - run_isy_program:
+          name: f_alarm_arm_away
+          command: :then
