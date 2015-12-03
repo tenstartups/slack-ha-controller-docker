@@ -23,13 +23,13 @@ command_actions:
           name: f_alarm_disarm
           command: :then
   - if:
-      - 0: arm_stay
+      - 0: stay
     then:
       - run_isy_program:
           name: f_alarm_arm_stay
           command: :then
   - if:
-      - 0: arm_away
+      - 0: away
     then:
       - run_isy_program:
           name: f_alarm_arm_away

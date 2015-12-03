@@ -14,6 +14,7 @@ class CommandActionHandler
     matching = Configuration.instance.config['command_actions'].select do |defn|
       defn['if'] && defn['if'].all? { |e| e.any? { |k, v| args.send(:[], k.to_i) == v } }
     end
+    STDERR.puts "Unknown command" and return if matching == []
     matching.map { |e| e['then'] }.each do |action_defns|
       action_defns.each do |action_defn|
         action_defn.each do |(action, attrs)|
