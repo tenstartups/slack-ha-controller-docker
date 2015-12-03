@@ -13,9 +13,11 @@ run: build
 	docker run -it --rm \
 	-p 9000:9000 \
 	-v /etc/localtime:/etc/localtime \
-  -v $(PWD):/etc/webhook \
+	-v $(PWD):/etc/webhook \
 	-e VIRTUAL_HOST=ha-slackhooks.docker \
-	-e WEBHOOK_CONFIG=/etc/webhook/hooks.json \
+	-e SLACK_AUTH_COMMANDS=home \
+	-e HOME_SLACK_AUTH_TOKEN=dummyauthtoken \
+	-e HOME_SLACK_AUTH_USERS=marclennox,marc \
 	-e CONFIG_FILE=/etc/webhook/config.yml \
 	--name ha-slackhooks \
 	${DOCKER_IMAGE_NAME} ${ARGS}

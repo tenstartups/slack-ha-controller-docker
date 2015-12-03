@@ -7,10 +7,10 @@ require 'singleton'
 class ISY994RestClient
   include Singleton
 
-  def run_program(name:, command: :if)
-    command = command.to_s.downcase.to_sym
-    command = :if unless %i[ if then else ].include?(command)
-    cmd = case command
+  def run_program(name:, branch: :if)
+    branch = branch.to_s.downcase.to_sym
+    branch = :if unless %i[ if then else ].include?(branch)
+    cmd = case branch
     when :if
       'runIf'
     when :then
@@ -21,32 +21,32 @@ class ISY994RestClient
       'runIf'
     end
     if (attr = programs.find { |a| a['name'] == name })
-      get("programs/#{attr['id']}/#{cmd}")['RestResponse']
+      puts "Running program #{name}, #{branch} branch"
+      result = get("programs/#{attr['id']}/#{cmd}")
+      puts result
     else
-      STDERR.puts "Missing program #{name}, NOT running command #{command}"
+      STDERR.puts "Missing program #{name}, NOT running #{branch} branch"
     end
-  rescue StandardError => e
-    STDERR.puts e.message
   end
 
   def set_integer(name:, value:)
     if (attr = integer_variables.find { |a| a['name'] == name })
-      get("vars/set/1/#{attr['id']}/#{value}")['RestResponse']
+      puts "Setting integer variable #{name} to #{value}"
+      get("vars/set/1/#{attr['id']}/#{value}")
+      puts result
     else
       STDERR.puts "Missing integer variable #{name}, NOT setting value to #{value}"
     end
-  rescue StandardError => e
-    STDERR.puts e.message
   end
 
   def set_state(name:, value:)
     if (attr = state_variables.find { |a| a['name'] == name })
-      get("vars/set/2/#{attr['id']}/#{value}")['RestResponse']
+      puts "Setting state variable #{name} to #{value}"
+      result = get("vars/set/2/#{attr['id']}/#{value}")
+      puts result
     else
       STDERR.puts "Missing state variable #{name}, NOT setting value to #{value}"
     end
-  rescue StandardError => e
-    STDERR.puts e.message
   end
 
   private
@@ -65,8 +65,6 @@ class ISY994RestClient
 
   def get(path)
     Hash.from_xml(RestClient.get("#{isy994_uri}/rest/#{path}"))
-  rescue StandardError => e
-    STDERR.puts e.message
   end
 
   def isy994_uri

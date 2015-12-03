@@ -5,29 +5,23 @@ require 'singleton'
 class DSCConnectRestClient
   include Singleton
 
-  def disarm
-    RestClient.post("#{dsc_connect_uri}/disarm?code=1234")
-  rescue StandardError => e
-    STDERR.puts e.message
+  def disarm(code:)
+    RestClient.post("#{dsc_connect_uri}/disarm", code: code)
   end
 
   def arm_stay
-    RestClient.post("#{dsc_connect_uri}/arm_stay")
-  rescue StandardError => e
-    STDERR.puts e.message
+    RestClient.post("#{dsc_connect_uri}/arm_stay", {})
   end
 
   def arm_away
-    RestClient.post("#{dsc_connect_uri}/arm_away")
-  rescue StandardError => e
-    STDERR.puts e.message
+    RestClient.post("#{dsc_connect_uri}/arm_away", {})
   end
 
   private
 
   def dsc_connect_uri
     @dsc_connect_uri ||= ENV['DSC_CONNECT_URI'] if ENV['DSC_CONNECT_URI'] && ENV['DSC_CONNECT_URI'].length > 0
-    @dsc_connect_uri ||= ((Configuration.instance.config['action_handlers'] || {})['dsc_connect'] || {})['URI']
+    @dsc_connect_uri ||= ((Configuration.instance.config['action_handlers'] || {})['dsc_connect'] || {})['uri']
     @dsc_connect_uri ||= 'http://dsc-connect'
   end
 end

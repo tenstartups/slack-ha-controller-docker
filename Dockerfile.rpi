@@ -24,18 +24,17 @@ RUN \
   cp /gosource/bin/webhook /usr/local/bin/
 
 # Install ruby gems.
-RUN gem install activesupport json colorize listen rest-client slack-notifier
+RUN gem install activesupport awesome_print json pry rest-client slack-notifier
 
 # Add files to the container.
-COPY entrypoint.sh /docker-entrypoint
+COPY entrypoint.rb /docker-entrypoint
 ADD script /tmp/script
 ADD lib /usr/local/lib/ruby
 
 # Copy scripts into place.
 RUN \
-  mkdir -p /var/scripts && \
-  find /tmp/script -type f -name '*.sh' | while read f; do cp -v "$f" "/var/scripts/`basename ${f%.sh}`"; done && \
-  find /tmp/script -type f -name '*.rb' | while read f; do cp -v "$f" "/var/scripts/`basename ${f%.rb}`"; done && \
+  find /tmp/script -type f -name '*.sh' | while read f; do cp -v "$f" "/usr/local/bin/`basename ${f%.sh}`"; done && \
+  find /tmp/script -type f -name '*.rb' | while read f; do cp -v "$f" "/usr/local/bin/`basename ${f%.rb}`"; done && \
   rm -rf /tmp/script
 
 # Define entrypoint script.
