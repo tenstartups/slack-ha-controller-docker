@@ -11,7 +11,7 @@ clean_build: Dockerfile.$(DOCKER_ARCH)
 
 run: build
 	docker run -it --rm \
-	-p 9000:9000 \
+	-p 8080:8080 \
 	-v /etc/localtime:/etc/localtime \
 	-v $(PWD):/etc/webhook \
 	-e VIRTUAL_HOST=ha-slackhooks.docker \

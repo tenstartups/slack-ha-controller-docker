@@ -1,30 +1,30 @@
 require 'singleton'
 
-class CommandActionHandler
+class SlackhookHandler
   include Singleton
 
   def initialize
-    @action_handlers = (Configuration.instance.config['action_handlers'] || []).reduce({}) do |hash, (_slug, attrs)|
+    @action_handlers = (Configuration.instance.action_handlers.try(:to_h) || {}).reduce({}) do |hash, (_slug, attrs)|
       attrs['actions'].each { |k, v| hash[k] = [ActiveSupport::Inflector.constantize(attrs['class_name']), v.to_sym] }
       hash
     end
   end
 
-  def run
-    slackbot_msg = SlackbotMessage.new(ARGV[0])
+  def run(params)
+    slackbot_msg = SlackbotMessage.new(params)
 
     # Check if the user is present
     if slackbot_msg.user_name.nil?
       slackbot_msg.error "No user specified for command `#{slackbot_msg.command}`!",
                          attributes: slackbot_msg.attributes
-      exit 1
+      return false
     end
 
     # Check if the command is valid
     if ENV['SLACK_AUTH_COMMANDS'] && !ENV['SLACK_AUTH_COMMANDS'].split(',').any? { |c| c == slackbot_msg.command }
       slackbot_msg.error "Invalid command `#{slackbot_msg.command}` received from `#{slackbot_msg.user_name}`!",
                          attributes: slackbot_msg.attributes
-      exit 1
+      return false
     end
 
     # Check if the message is authentic for this command
@@ -32,14 +32,14 @@ class CommandActionHandler
     if auth_token && slackbot_msg.token != auth_token
       slackbot_msg.error "Command `#{slackbot_msg.command}` from `#{slackbot_msg.user_name}` is not authentic!",
                          attributes: slackbot_msg.attributes
-      exit 1
+      return false
     end
 
     # Check if the user is authorized for any command
     if ENV["SLACK_AUTH_USERS"] && !ENV["SLACK_AUTH_USERS"].split(',').any? { |u| [slackbot_msg.user_id, slackbot_msg.user_name].include?(u) }
       slackbot_msg.error "User `#{slackbot_msg.user_name}` is not authorized for any commands`!",
                          attributes: slackbot_msg.attributes
-      exit 1
+      return false
     end
 
     # Check if the user is authorized for the specific command
@@ -47,11 +47,11 @@ class CommandActionHandler
     if auth_users && !auth_users.split(',').any? { |u| [slackbot_msg.user_id, slackbot_msg.user_name].include?(u) }
       slackbot_msg.error "User `#{slackbot_msg.user_name}` is not authorized for command `#{slackbot_msg.command}`!",
                          attributes: slackbot_msg.attributes
-      exit 1
+      return false
     end
 
     # Look for matching command actions
-    matching = Configuration.instance.config['command_actions'].select do |defn|
+    matching = (Configuration.instance.command_actions || []).select do |defn|
       defn['if'] && defn['if']['command'] == slackbot_msg.command && defn['if']['arguments'] == slackbot_msg.text_words
     end
 
@@ -75,7 +75,9 @@ class CommandActionHandler
     else
       slackbot_msg.error "Unknown command `#{slackbot_msg.display}` from `#{slackbot_msg.user_name}`",
                          attributes: slackbot_msg.attributes
-      exit 1
+      return false
     end
+
+    true
   end
 end

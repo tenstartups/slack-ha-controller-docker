@@ -5,8 +5,8 @@ require 'shellwords'
 require 'slack-notifier'
 
 class SlackbotMessage < OpenStruct
-  def initialize(json_msg)
-    super(JSON.parse(json_msg))
+  def initialize(params)
+    super(params)
     self.command = command[%r{^/?(.*)$}, 1]
     self.text_words = text.split(' ').map(&:strip)
     @response_colors = {

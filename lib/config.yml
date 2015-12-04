@@ -1,4 +1,7 @@
 ---
+bind_address: 0.0.0.0
+bind_port: 8080
+
 action_handlers:
   isy994:
     class_name: ISY994RestClient

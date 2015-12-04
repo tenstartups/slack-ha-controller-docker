@@ -21,7 +21,7 @@ class DSCConnectRestClient
 
   def dsc_connect_uri
     @dsc_connect_uri ||= ENV['DSC_CONNECT_URI'] if ENV['DSC_CONNECT_URI'] && ENV['DSC_CONNECT_URI'].length > 0
-    @dsc_connect_uri ||= ((Configuration.instance.config['action_handlers'] || {})['dsc_connect'] || {})['uri']
-    @dsc_connect_uri ||= 'http://dsc-connect'
+    @dsc_connect_uri ||= Configuration.instance.action_handlers.try(:dsc_connect).try(:uri)
+    @dsc_connect_uri ||= 'http://dsc-connect:8080'
   end
 end

@@ -9,39 +9,29 @@ MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 
 # Set environment variables.
 ENV \
-  GOPATH=/gosource \
   TERM=xterm-color \
   RUBYLIB=/usr/local/lib/ruby
 
 # Install packages.
 RUN \
-  apk --update add git go libffi-dev && \
+  apk --update add libxml2-dev libxslt-dev ruby-nokogiri zlib-dev && \
   rm -rf /var/cache/apk/*
 
-# Install webhook go service
+# Install gems.
 RUN \
-  go get github.com/adnanh/webhook && \
-  cp /gosource/bin/webhook /usr/local/bin/
-
-# Install ruby gems.
-RUN gem install activesupport awesome_print json pry rest-client slack-notifier
+gem install activesupport awesome_print colorize nokogiri pry puma recursive-open-struct \
+            puma rest-client sinatra slack-notifier thin tzinfo-data \
+            -- --use-system-libraries
 
 # Add files to the container.
 COPY entrypoint.rb /docker-entrypoint
-ADD script /tmp/script
-ADD lib /usr/local/lib/ruby
-
-# Copy scripts into place.
-RUN \
-  find /tmp/script -type f -name '*.sh' | while read f; do cp -v "$f" "/usr/local/bin/`basename ${f%.sh}`"; done && \
-  find /tmp/script -type f -name '*.rb' | while read f; do cp -v "$f" "/usr/local/bin/`basename ${f%.rb}`"; done && \
-  rm -rf /tmp/script
+ADD lib ${RUBYLIB}
 
 # Define entrypoint script.
 ENTRYPOINT ["/docker-entrypoint"]
 
 # Expose default ports
-EXPOSE 9000
+EXPOSE 8080
 
 # Default command
-CMD ["webhook"]
+CMD ["server"]

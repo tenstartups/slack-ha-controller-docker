@@ -1,1 +1,0 @@
-[{"id":"home","execute-command":"/usr/local/bin/webhook-command","response-message":"ok","include-command-output-in-response":false,"pass-arguments-to-command":[{"source":"entire-payload"}]}]

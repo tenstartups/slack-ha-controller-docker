@@ -1,15 +1,14 @@
 #!/usr/bin/env ruby
+require 'active_support'
+require 'active_support/core_ext'
 require 'awesome_print'
 require 'pry'
-require 'configuration'
 
-ENV['WEBHOOK_CONFIG'] = '/etc/webhook/hooks.json'
-
-Configuration.instance
+Dir[File.join(ENV['RUBYLIB'], '*.rb')].each { |f| require f }
 
 case ARGV[0]
-when 'webhook'
-  exec 'webhook', '-hooks', ENV['WEBHOOK_CONFIG'], '--verbose'
+when 'server'
+  SlackhookServer.start!
 when 'pry'
   binding.pry
 else
