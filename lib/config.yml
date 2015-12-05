@@ -1,6 +1,8 @@
 ---
-bind_address: 0.0.0.0
-bind_port: 8080
+rest_server:
+  bind_address: 0.0.0.0
+  bind_port: 8080
+  ack_message: ok
 
 action_handlers:
   isy994:

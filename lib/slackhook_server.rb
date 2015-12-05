@@ -1,21 +1,33 @@
-require 'json'
-require 'sinatra/base'
-require 'configuration'
+class SlackhookServer
+  include Singleton
 
-class SlackhookServer < Sinatra::Base
-  set :server, :puma
+  def start!
+    threads = []
 
-  configure do
-    set :environment, 'production'
-    set :bind, Configuration.instance.bind_address || '0.0.0.0'
-    set :port, Configuration.instance.bind_port || '8080'
-    set :run, true
-    set :threaded, true
-    set :traps, true
-  end
+    # Start the logger loop
+    threads << ConsoleLogger.instance.tap(&:start!)
 
-  post '/:command' do
-    SlackhookHandler.instance.run(params)
-    'ok'
+    # Start the command handler
+    threads << SlackhookCommandHandler.instance.tap(&:start!)
+
+    # Start the API REST server
+    threads << SlackhookRestServer.instance.tap(&:start!)
+
+    # Trap CTRL-C and SIGTERM
+    trap('INT') do
+      warn 'CTRL-C detected, waiting for all threads to exit gracefully...'
+      threads.reverse_each(&:quit!)
+      exit(0)
+    end
+    trap('TERM') do
+      error 'Kill detected, waiting for all threads to exit gracefully...'
+      threads.reverse_each(&:quit!)
+      exit(1)
+    end
+
+    warn 'Press CTRL-C at any time to stop all threads and exit'
+
+    # Wait on threads
+    threads.each(&:wait!)
   end
 end

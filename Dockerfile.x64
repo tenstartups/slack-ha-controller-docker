@@ -19,9 +19,9 @@ RUN \
 
 # Install gems.
 RUN \
-gem install activesupport awesome_print colorize nokogiri pry puma recursive-open-struct \
-            puma rest-client sinatra slack-notifier thin tzinfo-data \
-            -- --use-system-libraries
+  gem install activesupport awesome_print colorize nokogiri pry puma recursive-open-struct \
+              puma rest-client sinatra slack-notifier thin tzinfo-data \
+              -- --use-system-libraries
 
 # Add files to the container.
 COPY entrypoint.rb /docker-entrypoint

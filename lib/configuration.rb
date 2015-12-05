@@ -7,11 +7,12 @@ require 'yaml'
 
 class Configuration < SimpleDelegator
   include Singleton
+  include LoggingHelper
 
   def initialize
     default_config = File.join(File.dirname(__FILE__), 'config.yml')
     unless ENV['CONFIG_FILE'].nil? || File.exist?(ENV['CONFIG_FILE'])
-      STDERR.puts "Copying default configuration to #{ENV['CONFIG_FILE']}"
+      warn "Copying default configuration to #{ENV['CONFIG_FILE']}"
       FileUtils.mkdir_p(File.dirname(ENV['CONFIG_FILE']))
       FileUtils.cp(default_config, ENV['CONFIG_FILE'])
     end

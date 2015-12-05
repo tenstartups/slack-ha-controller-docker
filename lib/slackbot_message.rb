@@ -5,6 +5,8 @@ require 'shellwords'
 require 'slack-notifier'
 
 class SlackbotMessage < OpenStruct
+  include LoggingHelper
+
   def initialize(params)
     super(params)
     self.command = command[%r{^/?(.*)$}, 1]
@@ -36,7 +38,7 @@ class SlackbotMessage < OpenStruct
   end
 
   def respond(message, severity: 'info', attributes: {})
-    puts message
+    send :log, severity, message
     notifier = Slack::Notifier.new(response_url)
     params = {
       attachments: [

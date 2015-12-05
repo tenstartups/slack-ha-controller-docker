@@ -4,6 +4,7 @@ require 'singleton'
 
 class ISY994RestClient
   include Singleton
+  include LoggingHelper
 
   def run_program(name:, branch: :if)
     branch = branch.to_s.downcase.to_sym
@@ -19,31 +20,31 @@ class ISY994RestClient
       'runIf'
     end
     if (attr = programs.find { |a| a['name'] == name })
-      puts "Running program #{name}, #{branch} branch"
+      info "Running program #{name}, #{branch} branch"
       result = get("programs/#{attr['id']}/#{cmd}")
-      puts result
+      info "Result : #{result}"
     else
-      STDERR.puts "Missing program #{name}, NOT running #{branch} branch"
+      warn "Missing program #{name}, NOT running #{branch} branch"
     end
   end
 
   def set_integer(name:, value:)
     if (attr = integer_variables.find { |a| a['name'] == name })
-      puts "Setting integer variable #{name} to #{value}"
+      info "Setting integer variable #{name} to #{value}"
       get("vars/set/1/#{attr['id']}/#{value}")
-      puts result
+      info "Result : #{result}"
     else
-      STDERR.puts "Missing integer variable #{name}, NOT setting value to #{value}"
+      warn "Missing integer variable #{name}, NOT setting value to #{value}"
     end
   end
 
   def set_state(name:, value:)
     if (attr = state_variables.find { |a| a['name'] == name })
-      puts "Setting state variable #{name} to #{value}"
+      info "Setting state variable #{name} to #{value}"
       result = get("vars/set/2/#{attr['id']}/#{value}")
-      puts result
+      info "Result : #{result}"
     else
-      STDERR.puts "Missing state variable #{name}, NOT setting value to #{value}"
+      warn "Missing state variable #{name}, NOT setting value to #{value}"
     end
   end
 
