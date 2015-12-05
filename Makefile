@@ -15,7 +15,9 @@ run: build
 	-v /etc/localtime:/etc/localtime \
 	-v $(PWD):/etc/webhook \
 	-e VIRTUAL_HOST=ha-slackhooks.docker \
-	-e SLACK_AUTH_COMMANDS=home \
+	-e SLACK_AUTH_COMMANDS=alarm,home \
+	-e ALARM_SLACK_AUTH_TOKEN=dummyauthtoken \
+	-e ALARM_SLACK_AUTH_USERS=marclennox,marc \
 	-e HOME_SLACK_AUTH_TOKEN=dummyauthtoken \
 	-e HOME_SLACK_AUTH_USERS=marclennox,marc \
 	-e CONFIG_FILE=/etc/webhook/config.yml \

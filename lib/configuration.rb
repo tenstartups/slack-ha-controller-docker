@@ -17,14 +17,15 @@ class Configuration < SimpleDelegator
     end
     config = YAML.load_file(ENV['CONFIG_FILE']) if ENV['CONFIG_FILE'] && File.exist?(ENV['CONFIG_FILE'])
     config ||= YAML.load_file(default_config)
-    super(RecursiveOpenStruct.new(config))
+    @config = RecursiveOpenStruct.new(config)
+    super(@config)
   end
 
   def method_missing(*_)
-    nil
+    @config.send(*_) || nil
   end
 
   def respond_to_missing?(*_)
-    true
+    @config.send(*_) || true
   end
 end
