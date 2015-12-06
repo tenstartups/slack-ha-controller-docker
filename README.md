@@ -1,2 +1,2 @@
-# Slackhooks Home Automation Commander
-Slackbot webhook command runner for home automation scripts
+# Slack Home Automation Commander
+Slack webhook command runner for home automation scripts

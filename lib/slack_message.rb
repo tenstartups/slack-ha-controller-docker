@@ -4,7 +4,7 @@ require 'ostruct'
 require 'shellwords'
 require 'slack-notifier'
 
-class SlackbotMessage < OpenStruct
+class SlackMessage < OpenStruct
   include LoggingHelper
 
   def initialize(params)
@@ -44,7 +44,7 @@ class SlackbotMessage < OpenStruct
       attachments: [
         {
           fallback: message,
-          title: "Slackbot #{severity}",
+          title: "#{severity.to_s.titleize} response",
           text: message,
           color: @response_colors[severity.to_sym],
           fields: attributes.map do |n, v|

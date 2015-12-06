@@ -11,58 +11,61 @@ class SlackhookCommandHandler
   end
 
   def enqueue(params)
-    @work_queue.push(SlackbotMessage.new(params))
+    @work_queue.push(SlackMessage.new(params))
   end
 
   def do_work
     until @work_queue.empty?
 
-      slackbot_msg = @work_queue.pop
+      # Set the slack message thread variable
+      slack_msg = @work_queue.pop
+      Thread.current.thread_variable_set(:slack_message, slack_msg)
 
       # Check if the user is present
-      if slackbot_msg.user_name.nil?
-        slackbot_msg.error "No user specified for command `#{slackbot_msg.command}`!",
-                           attributes: slackbot_msg.attributes
+      if slack_msg.user_name.nil?
+        slack_msg.error "No user specified for command `#{slack_msg.command}`!",
+                           attributes: slack_msg.attributes
         next
       end
 
       # Check if the command is valid
-      if ENV['SLACK_AUTH_COMMANDS'] && !ENV['SLACK_AUTH_COMMANDS'].split(',').any? { |c| c == slackbot_msg.command }
-        slackbot_msg.error "Invalid command `#{slackbot_msg.command}` received from `#{slackbot_msg.user_name}`!",
-                           attributes: slackbot_msg.attributes
+      if ENV['SLACK_AUTH_COMMANDS'] && !ENV['SLACK_AUTH_COMMANDS'].split(',').any? { |c| c == slack_msg.command }
+        slack_msg.error "Invalid command `#{slack_msg.command}` received from `#{slack_msg.user_name}`!",
+                           attributes: slack_msg.attributes
         next
       end
 
       # Check if the message is authentic for this command
-      auth_token = ENV["#{slackbot_msg.command.upcase.gsub(/-/, '_')}_SLACK_AUTH_TOKEN"]
-      if auth_token && slackbot_msg.token != auth_token
-        slackbot_msg.error "Command `#{slackbot_msg.command}` from `#{slackbot_msg.user_name}` is not authentic!",
-                           attributes: slackbot_msg.attributes
+      auth_token = ENV["#{slack_msg.command.upcase.gsub(/-/, '_')}_SLACK_AUTH_TOKEN"]
+      if auth_token && slack_msg.token != auth_token
+        slack_msg.error "Command `#{slack_msg.command}` from `#{slack_msg.user_name}` is not authentic!",
+                           attributes: slack_msg.attributes
         next
       end
 
       # Check if the user is authorized for any command
-      if ENV["SLACK_AUTH_USERS"] && !ENV["SLACK_AUTH_USERS"].split(',').any? { |u| [slackbot_msg.user_id, slackbot_msg.user_name].include?(u) }
-        slackbot_msg.error "User `#{slackbot_msg.user_name}` is not authorized for any commands`!",
-                           attributes: slackbot_msg.attributes
+      if ENV["SLACK_AUTH_USERS"] && !ENV["SLACK_AUTH_USERS"].split(',').any? { |u| [slack_msg.user_id, slack_msg.user_name].include?(u) }
+        slack_msg.error "User `#{slack_msg.user_name}` is not authorized for any commands`!",
+                           attributes: slack_msg.attributes
         next
       end
 
       # Check if the user is authorized for the specific command
-      auth_users = ENV["#{slackbot_msg.command.upcase.gsub(/-/, '_')}_SLACK_AUTH_USERS"]
-      if auth_users && !auth_users.split(',').any? { |u| [slackbot_msg.user_id, slackbot_msg.user_name].include?(u) }
-        slackbot_msg.error "User `#{slackbot_msg.user_name}` is not authorized for command `#{slackbot_msg.command}`!",
-                           attributes: slackbot_msg.attributes
+      auth_users = ENV["#{slack_msg.command.upcase.gsub(/-/, '_')}_SLACK_AUTH_USERS"]
+      if auth_users && !auth_users.split(',').any? { |u| [slack_msg.user_id, slack_msg.user_name].include?(u) }
+        slack_msg.error "User `#{slack_msg.user_name}` is not authorized for command `#{slack_msg.command}`!",
+                           attributes: slack_msg.attributes
         next
       end
 
       # Look for matching command actions
       matching = (Configuration.instance.command_actions || []).select do |defn|
-        defn['if'] && defn['if']['command'] == slackbot_msg.command && defn['if']['arguments'] == slackbot_msg.text_words
+        defn['if'] && defn['if']['command'] == slack_msg.command &&
+        (args = defn['if']['arguments']) == slack_msg.text_words[0..(args.length - 1)]
       end
 
       if matching.length > 0
-        slackbot_msg.info "Received command `#{slackbot_msg.display}` from `#{slackbot_msg.user_name}`"
+        slack_msg.info "Received command `#{slack_msg.display}` from `#{slack_msg.user_name}`"
         matching.map { |e| e['then'] }.each do |action_defns|
           action_defns.each do |action_defn|
             if action_defn.is_a?(String)
@@ -79,8 +82,8 @@ class SlackhookCommandHandler
           end
         end
       else
-        slackbot_msg.error "Unknown command `#{slackbot_msg.display}` from `#{slackbot_msg.user_name}`",
-                           attributes: slackbot_msg.attributes
+        slack_msg.error "Unknown command `#{slack_msg.display}` from `#{slack_msg.user_name}`",
+                           attributes: slack_msg.attributes
         next
       end
     end

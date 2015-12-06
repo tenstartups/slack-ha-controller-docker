@@ -7,6 +7,7 @@ class ISY994RestClient
   include LoggingHelper
 
   def run_program(name:, branch: :if)
+    slack_msg = Thread.current.thread_variable_get(:slack_message)
     branch = branch.to_s.downcase.to_sym
     branch = :if unless %i[ if then else ].include?(branch)
     cmd = case branch
@@ -24,27 +25,29 @@ class ISY994RestClient
       result = get("programs/#{attr['id']}/#{cmd}")
       info "Result : #{result}"
     else
-      warn "Missing program #{name}, NOT running #{branch} branch"
+      slack_msg.error "Missing program `#{name}`, NOT running `#{branch}` branch"
     end
   end
 
   def set_integer(name:, value:)
+    slack_msg = Thread.current.thread_variable_get(:slack_message)
     if (attr = integer_variables.find { |a| a['name'] == name })
       info "Setting integer variable #{name} to #{value}"
       get("vars/set/1/#{attr['id']}/#{value}")
       info "Result : #{result}"
     else
-      warn "Missing integer variable #{name}, NOT setting value to #{value}"
+      slack_msg.error "Missing integer variable `#{name}`, NOT setting value to `#{value}`"
     end
   end
 
   def set_state(name:, value:)
+    slack_msg = Thread.current.thread_variable_get(:slack_message)
     if (attr = state_variables.find { |a| a['name'] == name })
       info "Setting state variable #{name} to #{value}"
       result = get("vars/set/2/#{attr['id']}/#{value}")
       info "Result : #{result}"
     else
-      warn "Missing state variable #{name}, NOT setting value to #{value}"
+      slack_msg.error "Missing state variable `#{name}`, NOT setting value to `#{value}`"
     end
   end
 

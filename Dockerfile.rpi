@@ -1,7 +1,7 @@
 #
-# Slackbot webhook command runner for home automation scripts
+# Slack webhook command runner for home automation scripts
 #
-# http://github.com/tenstartups/slackbot-ha-commander-docker
+# http://github.com/tenstartups/slack-ha-commander-docker
 #
 FROM tenstartups/rpi-alpine-ruby:latest
 

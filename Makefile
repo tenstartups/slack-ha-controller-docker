@@ -1,4 +1,4 @@
-DOCKER_IMAGE_NAME := tenstartups/slackbot-ha-commander
+DOCKER_IMAGE_NAME := tenstartups/slack-ha-commander
 ifeq ($(DOCKER_ARCH),rpi)
 	DOCKER_IMAGE_NAME := $(subst /,/$(DOCKER_ARCH)-,$(DOCKER_IMAGE_NAME))
 endif
