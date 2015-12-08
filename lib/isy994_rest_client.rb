@@ -26,6 +26,7 @@ class ISY994RestClient
       info "Result : #{result}"
     else
       slack_msg.error "Missing program `#{name}`, NOT running `#{branch}` branch"
+      @programs = nil
     end
   end
 
@@ -37,6 +38,7 @@ class ISY994RestClient
       info "Result : #{result}"
     else
       slack_msg.error "Missing integer variable `#{name}`, NOT setting value to `#{value}`"
+      @integer_variables = nil
     end
   end
 
@@ -48,6 +50,7 @@ class ISY994RestClient
       info "Result : #{result}"
     else
       slack_msg.error "Missing state variable `#{name}`, NOT setting value to `#{value}`"
+      @state_variables = nil
     end
   end
 
