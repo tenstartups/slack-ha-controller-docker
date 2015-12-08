@@ -51,6 +51,6 @@ class SinatraApp < Sinatra::Base
 
   post '/:command' do
     SlackhookCommandHandler.instance.enqueue(params)
-    Configuration.instance.rest_server.try(:ack_message) || 'ok'
+    Configuration.instance.rest_server.try(:ack_message)
   end
 end
