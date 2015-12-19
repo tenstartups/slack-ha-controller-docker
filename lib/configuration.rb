@@ -22,11 +22,11 @@ class Configuration < SimpleDelegator
     super(@config)
   end
 
-  def method_missing(*_)
-    @config.send(*_) || nil
+  def method_missing(*args)
+    @config.send(*args) || nil
   end
 
-  def respond_to_missing?(*_)
-    @config.send(*_) || true
+  def respond_to_missing?(*args)
+    @config.send(*args) || true
   end
 end

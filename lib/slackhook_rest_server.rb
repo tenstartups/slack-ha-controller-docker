@@ -27,7 +27,7 @@ class SlackhookRestServer
 
   def thread_ready
     JSON.parse(RestClient.get("http://#{bind_address}:#{bind_port}/start_check"))['status'] == 'ok'
-  rescue Exception => e
+  rescue StandardError
     false
   end
 end

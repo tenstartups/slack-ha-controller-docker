@@ -14,7 +14,7 @@ module WorkerThreadBase
   end
 
   def start!
-    raise 'Worker already started' if process_thread
+    fail 'Worker already started' if process_thread
     @process_thread = Thread.new do
       begin
         debug 'Starting processing thread'

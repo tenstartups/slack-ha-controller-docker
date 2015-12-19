@@ -9,7 +9,7 @@ class ISY994RestClient
   def run_program(name:, branch: :if)
     slack_msg = Thread.current.thread_variable_get(:slack_message)
     branch = branch.to_s.downcase.to_sym
-    branch = :if unless %i[ if then else ].include?(branch)
+    branch = :if unless %i( if then else ).include?(branch)
     cmd = case branch
     when :if
       'runIf'

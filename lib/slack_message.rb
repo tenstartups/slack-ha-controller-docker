@@ -25,10 +25,10 @@ class SlackMessage < OpenStruct
   end
 
   def attributes
-    to_h.select { |k, v| %i[ team_domain channel_name user_name command text ].include?(k) }
+    to_h.select { |k, v| %i( team_domain channel_name user_name command text ).include?(k) }
   end
 
-  %i[ debug info success warn error].each do |severity|
+  %i( debug info success warn error).each do |severity|
     define_method severity do |message, **options|
       options ||= {}
       options.merge!(severity: severity)

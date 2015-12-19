@@ -14,7 +14,7 @@ class ConsoleLogger
     @log_queue.push source_id: source_id, severity: severity, message: message
   end
 
-  %i[ debug info warn error ].each do |severity|
+  %i( debug info warn error ).each do |severity|
     define_method :"log_#{severity}" do |source_id, message|
       log severity: severity.to_sym, source_id: source_id, message: message
     end
