@@ -20,7 +20,7 @@ action_handlers:
       set_isy_state_variable: set_state
   dsc_connect:
     class_name: Slackhook::DSCConnectRestClient
-    uri: http://dsc-connect.docker
+    uri: http://dsc-connect
     actions:
       dsc_alarm_disarm: disarm
       dsc_alarm_stay: arm_stay
