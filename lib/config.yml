@@ -4,16 +4,22 @@ rest_server:
   bind_port: 8080
   ack_message: ok
 
+commands:
+  ha:
+    slack_auth_token: SLACK_TOKEN
+    slack_auth_users:
+      - SLACK_USER
+
 action_handlers:
   isy994:
-    class_name: ISY994RestClient
+    class_name: Slackhook::ISY994RestClient
     uri: http://admin:admin@isy994-ems
     actions:
       run_isy_program: run_program
       set_isy_integer_variable: set_integer
       set_isy_state_variable: set_state
   dsc_connect:
-    class_name: DSCConnectRestClient
+    class_name: Slackhook::DSCConnectRestClient
     uri: http://dsc-connect.docker
     actions:
       dsc_alarm_disarm: disarm
@@ -21,11 +27,11 @@ action_handlers:
       dsc_alarm_away: arm_away
 
 command_actions:
-  - if:
+  - conditions:
       command: ha
       arguments:
         - do_something
-    then:
+    actions:
       - run_isy_program:
           name: some_program
           branch: if
