@@ -12,13 +12,13 @@ module Slackhook
       RestClient.post("#{dsc_connect_uri}/disarm", code: code)
     end
 
-    def arm_stay
+    def arm_stay(**args)
       slack_msg = Thread.current.thread_variable_get(:slack_message)
       info 'Arming alarm in stay mode'
       RestClient.post("#{dsc_connect_uri}/arm_stay", {})
     end
 
-    def arm_away
+    def arm_away(**args)
       slack_msg = Thread.current.thread_variable_get(:slack_message)
       info 'Arming alarm in away mode'
       RestClient.post("#{dsc_connect_uri}/arm_away", {})

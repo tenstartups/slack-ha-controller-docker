@@ -25,14 +25,14 @@ module Slackhook
         # Check if the user is present
         if slack_message.user_name.nil?
           slack_message.error "No user specified for command `#{slack_message.command}`!",
-                          attributes: slack_message.attributes
+                              attributes: slack_message.attributes
           next
         end
 
         # Check if the command is valid
         unless Configuration.instance.commands.send(slack_message.command)
           slack_message.error "Invalid command `#{slack_message.command}` received from `#{slack_message.user_name}`!",
-                          attributes: slack_message.attributes
+                              attributes: slack_message.attributes
           next
         end
 
@@ -40,7 +40,7 @@ module Slackhook
         auth_token = Configuration.instance.commands.send(slack_message.command).try(:slack_auth_token)
         if auth_token && slack_message.token != auth_token
           slack_message.error "Command `#{slack_message.command}` from `#{slack_message.user_name}` is not authentic!",
-                          attributes: slack_message.attributes
+                              attributes: slack_message.attributes
           next
         end
 
@@ -48,7 +48,7 @@ module Slackhook
         auth_users = Configuration.instance.slack_auth_users
         if auth_users && !auth_users.any? { |u| [slack_message.user_id, slack_message.user_name].include?(u) }
           slack_message.error "User `#{slack_message.user_name}` is not authorized for any commands!",
-                          attributes: slack_message.attributes
+                              attributes: slack_message.attributes
           next
         end
 
@@ -56,7 +56,7 @@ module Slackhook
         auth_users = Configuration.instance.commands.send(slack_message.command).try(:slack_auth_users)
         if auth_users && !auth_users.any? { |u| [slack_message.user_id, slack_message.user_name].include?(u) }
           slack_message.error "User `#{slack_message.user_name}` is not authorized for `#{slack_message.command}` command!",
-                          attributes: slack_message.attributes
+                              attributes: slack_message.attributes
           next
         end
 
@@ -71,7 +71,7 @@ module Slackhook
           matching.each { |defn| execute_actions(slack_message.text_words, defn) }
         else
           slack_message.error "Unknown command `#{slack_message.display}` from `#{slack_message.user_name}`",
-                          attributes: slack_message.attributes
+                              attributes: slack_message.attributes
           next
         end
       end
