@@ -1,8 +1,4 @@
-require 'open3'
-
 module Slackhook
-  class TaskError < StandardError; end
-
   class TaskHandler
     include WorkerThreadBase
 
@@ -25,7 +21,7 @@ module Slackhook
             end
           end
           slack_notifier.success "Finished command `#{command_args.join(' ')}`"
-        rescue TaskError
+        rescue CommandError => e
           slack_notifier.error "Error running command `#{command_args.join(' ')}`"
         end
       end
@@ -41,25 +37,6 @@ module Slackhook
         task = @task_queue.pop
         break if quit_thread?
         task[:proc].call
-      end
-    end
-
-    def run(command)
-      output_log = log_file
-      Open3.popen2e(command) do |stdin, stdout_and_stderr, wait_thr|
-        loop do
-          break if (line = stdout_and_stderr.read).blank?
-          line.split(/[^[:print:]]/i).each do |l|
-            l = l[/^\s*(?<control>\[\d*[BAKm])?(?<line>.*)\s*$/i, :line]
-            next if l.blank?
-            info(l)
-            File.open(output_log, 'a') { |f| f.write("#{l}\n") }
-          end
-        end
-        unless wait_thr.value.success?
-          error "Command `#{command}` failed!"
-          fail TaskError, "Command `#{command}` failed!"
-        end
       end
     end
 

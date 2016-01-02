@@ -15,16 +15,16 @@ action_handlers:
     class_name: Slackhook::ISY994RestClient
     uri: http://admin:admin@isy994-ems
     actions:
-      run_isy_program: run_program
-      set_isy_integer_variable: set_integer
-      set_isy_state_variable: set_state
+      - run_program
+      - set_integer
+      - set_state
   dsc_connect:
     class_name: Slackhook::DSCConnectRestClient
     uri: http://dsc-connect
     actions:
-      dsc_alarm_disarm: disarm
-      dsc_alarm_stay: arm_stay
-      dsc_alarm_away: arm_away
+      - disarm
+      - arm_stay
+      - arm_away
 
 command_actions:
   - conditions:
@@ -32,6 +32,6 @@ command_actions:
       arguments:
         - do_something
     actions:
-      - run_isy_program:
+      - isy994_run_program:
           name: some_program
           branch: if

@@ -3,10 +3,15 @@ module Slackhook
     include WorkerThreadBase
 
     def initialize
-      @action_handlers = (Configuration.instance.action_handlers.try(:to_h) || {}).reduce({}) do |hash, (_slug, attrs)|
+      defns = Configuration.instance.action_handlers.try(:to_h) || {}
+      @action_handlers = defns.each_with_object({}) do |(slug, attrs), hash|
         attrs = attrs.symbolize_keys
-        attrs[:actions].each { |k, v| hash[k.to_sym] = [ActiveSupport::Inflector.constantize(attrs[:class_name]), v.to_sym] }
-        hash
+        attrs[:actions].each do |action|
+          hash[:"#{slug}_#{action}"] = {
+            class: ActiveSupport::Inflector.constantize(attrs[:class_name]),
+            method: action.to_sym
+          }
+        end
       end
       @work_queue = Queue.new
     end
@@ -78,11 +83,11 @@ module Slackhook
     end
 
     def execute_actions(command_args, command_defn)
-      actions = command_defn['actions'].reduce([]) do |a, action_defn|
+      actions = command_defn['actions'].each_with_object([]) do |action_defn, a|
         if action_defn.is_a?(String)
           a << {
-            action_class: @action_handlers[action_defn.to_sym][0],
-            action_method: @action_handlers[action_defn.to_sym][1],
+            action_class: @action_handlers[action_defn.to_sym].try(:[], :class),
+            action_method: @action_handlers[action_defn.to_sym].try(:[], :method),
             action_arguments: {}
           }
         elsif action_defn.is_a?(Hash)
@@ -93,9 +98,7 @@ module Slackhook
                 value = command_args.send(:[], match[1].to_i - 1) ||
                         command_defn['default_arguments'].send(:[], match[1].to_i)
               end
-              if (match = /^\$\*$/.match(value.to_s))
-                value = command_args
-              end
+              value = command_args if /^\$\*$/.match(value.to_s)
               if (match = /^(?<lookup_name>.+)_lookup_(?<lookup_value>.+)$/.match(name))
                 name = match[:lookup_value]
                 Configuration.instance.lookup.send(:"#{match[:lookup_name]}").each do |lookup|
@@ -108,8 +111,8 @@ module Slackhook
               args
             end
             a << {
-              action_class: @action_handlers[action.to_sym][0],
-              action_method: @action_handlers[action.to_sym][1],
+              action_class: @action_handlers[action.to_sym].try(:[], :class),
+              action_method: @action_handlers[action.to_sym].try(:[], :method),
               action_arguments: arguments
             }
           end

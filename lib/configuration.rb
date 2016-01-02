@@ -11,7 +11,7 @@ module Slackhook
     include LoggingHelper
 
     def initialize
-      default_config = File.join(File.dirname(__FILE__), 'config.yml')
+      default_config = File.join(File.dirname(__FILE__), 'config_template.yml')
       unless ENV['CONFIG_FILE'].nil? || File.exist?(ENV['CONFIG_FILE'])
         warn "Copying default configuration to #{ENV['CONFIG_FILE']}"
         FileUtils.mkdir_p(File.dirname(ENV['CONFIG_FILE']))

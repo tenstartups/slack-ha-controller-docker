@@ -15,7 +15,7 @@ module Slackhook
       @log_queue.push source_id: source_id, severity: severity, message: message
     end
 
-    %i( debug info warn error ).each do |severity|
+    %i( debug info warn error success ).each do |severity|
       define_method :"log_#{severity}" do |source_id, message|
         log severity: severity.to_sym, source_id: source_id, message: message
       end
@@ -66,6 +66,8 @@ module Slackhook
                           [:stderr, message.colorize(:yellow)]
                         when :error
                           [:stderr, message.colorize(:red)]
+                        when :success
+                          [:stdout, message.colorize(:green)]
                         else
                           [:stdout, message]
                         end
