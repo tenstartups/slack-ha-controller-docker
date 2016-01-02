@@ -18,7 +18,7 @@ action_handlers:
       - run_program
       - set_integer
       - set_state
-  dsc_connect:
+  dsc_alarm:
     class_name: Slackhook::DSCConnectRestClient
     uri: http://dsc-connect
     actions:
