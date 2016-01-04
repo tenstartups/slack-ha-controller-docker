@@ -1,6 +1,7 @@
 module Slackhook
   class Server
     include Singleton
+    include LoggingHelper
 
     def start!
       threads = []

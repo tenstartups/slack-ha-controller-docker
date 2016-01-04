@@ -6,9 +6,11 @@ module Slackhook
       defns = Configuration.instance.action_handlers.try(:to_h) || {}
       @action_handlers = defns.each_with_object({}) do |(slug, attrs), hash|
         attrs = attrs.symbolize_keys
+        action_handler = ActiveSupport::Inflector.constantize(attrs[:class_name])
+        action_handler.instance.config = attrs[:config]
         attrs[:actions].each do |action|
           hash[:"#{slug}_#{action}"] = {
-            class: ActiveSupport::Inflector.constantize(attrs[:class_name]),
+            class: action_handler,
             method: action.to_sym
           }
         end

@@ -21,7 +21,7 @@ module Slackhook
             end
           end
           slack_notifier.success "Finished command `#{command_args.join(' ')}`"
-        rescue CommandError => e
+        rescue Slackhook::Action::Error => e
           slack_notifier.error "Error running command `#{command_args.join(' ')}`"
         end
       end

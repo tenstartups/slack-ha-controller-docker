@@ -12,19 +12,21 @@ commands:
 
 action_handlers:
   isy994:
-    class_name: Slackhook::ISY994RestClient
-    uri: http://admin:admin@isy994-ems
+    class_name: Slackhook::Action::ISY994
     actions:
       - run_program
       - set_integer
       - set_state
+    config:
+      uri: http://admin:admin@isy994-ems
   dsc_alarm:
-    class_name: Slackhook::DSCConnectRestClient
-    uri: http://dsc-connect
+    class_name: Slackhook::Action::DSCAlarm
     actions:
       - disarm
       - arm_stay
       - arm_away
+    config:
+      uri: http://dsc-connect
 
 command_actions:
   - conditions:
