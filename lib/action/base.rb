@@ -40,6 +40,8 @@ module Slackhook
             fail Error, "Command `#{command}` failed!"
           end
         end
+      rescue StandardError
+        raise Error, "Command `#{command}` failed!"
       end
     end
   end
