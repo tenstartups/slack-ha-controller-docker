@@ -3,6 +3,7 @@
 #
 # http://github.com/tenstartups/slack-ha-controller-docker
 #
+
 FROM tenstartups/alpine:latest
 
 MAINTAINER Marc Lennox <marc.lennox@gmail.com>
