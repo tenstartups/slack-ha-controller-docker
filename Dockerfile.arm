@@ -4,7 +4,7 @@
 # http://github.com/tenstartups/slack-ha-controller-docker
 #
 
-FROM tenstartups/rpi-alpine:latest
+FROM tenstartups/alpine:latest
 
 MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 
@@ -14,9 +14,9 @@ ENV \
 
 # Install packages.
 RUN \
-apk --update add build-base libxml2-dev libxslt-dev ruby \
-             ruby-bigdecimal ruby-bundler ruby-dev ruby-irb ruby-io-console \
-             ruby-json ruby-nokogiri zlib-dev && \
+  apk --update add build-base libxml2-dev libxslt-dev ruby \
+           ruby-bigdecimal ruby-bundler ruby-dev ruby-irb ruby-io-console \
+           ruby-json ruby-nokogiri zlib-dev && \
   rm -rf /var/cache/apk/*
 
 # Install gems.
