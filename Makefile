@@ -1,5 +1,5 @@
 ifeq ($(DOCKER_ARCH),arm)
-	DOCKER_IMAGE_NAME := tenstartups/slack-ha-controller:arm
+	DOCKER_IMAGE_NAME := tenstartups/slack-ha-controller:armhf
 else
 	DOCKER_IMAGE_NAME := tenstartups/slack-ha-controller:latest
 endif
