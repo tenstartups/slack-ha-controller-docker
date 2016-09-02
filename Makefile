@@ -1,4 +1,4 @@
-ifeq ($(DOCKER_ARCH),arm)
+ifeq ($(DOCKER_ARCH),armhf)
 	DOCKER_IMAGE_NAME := tenstartups/slack-ha-controller:armhf
 else
 	DOCKER_IMAGE_NAME := tenstartups/slack-ha-controller:latest
